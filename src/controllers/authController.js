@@ -10,8 +10,24 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/* ================= REGISTER ================= */
+export const getUsrs = async (req, res) => {
+  try {
+    const totalUsers = await User.find().sort({ createdAt: -1 });
 
+    res.status(200).json({
+      success: true,
+      count: totalUsers.length,
+      data: totalUsers
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
     const {
@@ -23,25 +39,7 @@ export const register = async (req, res) => {
       city,
       state,
       pincode,
-
     } = req.body;
-
-    // Validation
-    // if (
-    //   !fullName
-    //   // !email ||
-    //   // !password ||
-    //   // !phone ||
-    //   // !dob ||
-    //   // !city ||
-    //   // !state ||
-    //   // !pincode
-    // ) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "All fields are required",
-    //   });
-    // }
 
     // Check email
     const emailExists = await User.findOne({ email });
@@ -63,7 +61,7 @@ export const register = async (req, res) => {
       });
     }
 
-    // Hash Password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Upload image
@@ -89,15 +87,11 @@ export const register = async (req, res) => {
       pincode,
       image: imageUrl,
 
-
-      otp: String,
-      otpExpiry: Date,
-      otpSentAt: Date,
-
-      isVerified: {
-        type: Boolean,
-        default: false,
-      },
+      // Actual values (not schema definitions)
+      otp: "",
+      otpExpiry: null,
+      otpSentAt: null,
+      isVerified: false,
     });
 
     // Generate JWT
@@ -111,7 +105,7 @@ export const register = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return res.status(500).json({
       success: false,
@@ -478,4 +472,78 @@ export const updateStudent = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+
+
+export const deleteUser = async(req,res)=>{
+
+ try{
+
+
+  const {id}=req.params;
+
+
+
+  const user = await User.findById(id);
+
+
+
+  if(!user){
+
+    return res.status(404).json({
+
+      success:false,
+
+      message:"User not found"
+
+    });
+
+  }
+
+
+
+  // Delete Cloudinary Image
+
+  if(user.public_id){
+
+    await cloudinary.uploader.destroy(
+      user.public_id
+    );
+
+  }
+
+
+
+  // Delete MongoDB User
+
+  await User.findByIdAndDelete(id);
+
+
+
+  res.status(200).json({
+
+    success:true,
+
+    message:"User and Image deleted successfully"
+
+  });
+
+
+
+ }catch(error){
+
+
+  res.status(500).json({
+
+    success:false,
+
+    message:error.message
+
+  });
+
+
+ }
+
+
 };

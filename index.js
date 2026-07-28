@@ -10,6 +10,8 @@ import cartRoutes from "./src/routes/cartRoutes.js";
 import userBlockRoutes from "./src/routes/blockRoutes.js";
 import categoryRoutes from "./src/routes/categoryRoutes.js"
 import orderTrackingRoutes from "./src/routes/orderTrackingRoutes.js"
+import appleRoutes from "./src/routes/appleRoutes.js";
+import orderSucessed from "./src/routes/orderSucessedRoutes.js"
 import cors from "cors";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -24,12 +26,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/banner", bannerRoutes);
-app.use("/api/product",productRoutes);
+app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/user", userBlockRoutes);
-app.use("/api/bestselling",bestsellingRoutes);
-app.use("/api/category",categoryRoutes);
-app.use("/api/order",orderTrackingRoutes);
+app.use("/api/bestselling", bestsellingRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/order", orderTrackingRoutes);
+app.use("/api/apple",appleRoutes);
+app.use("/api",orderSucessed);
 
 app.listen(PORT, () =>
   console.log(`Server is running on port ${PORT}`)

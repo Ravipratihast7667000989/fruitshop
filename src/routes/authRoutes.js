@@ -10,6 +10,8 @@ import {
   searchStudents,
   updateStudent,
   profile,
+  getUsrs,
+  deleteUser,
 
 } from "../controllers/authController.js";
 import { createStudent } from "../controllers/studentController.js";
@@ -40,13 +42,14 @@ router.post("/register", productupload.single("image"), register);
 
 router.put("/update-password", verifyToken, updatePassword);
 router.get("/profile", authauthMiddleware, profile);
+router.delete("/user/delete/:id", deleteUser);
 router.post("/login", login);
 router.post("/send-otp", forgotPassword);
 router.post("/verify-otp", verifyOtp);
 router.post("/reset-password", resetPassword);
 router.post("/resend-otp", resendOtp);
 router.post("/attendence", upload.single("image"), markAttendance);
-router.get("/all-students-attendance", getAStudents);
+router.get("/total/users", getUsrs);
 // payment routes
 router.post("/create-order", createOrder);
 router.post("/verify-payment", verifyPayment);
