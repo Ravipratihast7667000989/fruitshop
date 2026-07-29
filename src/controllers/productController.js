@@ -1,170 +1,117 @@
-import productModel from "../models/productModel.js";
+
 import cloudinary from "../utils/cloudinary.js";
+import Pdf from "../models/pdfModel.js";
 
+export const deletePdf = async (req, res) => {
+  try {
 
+    const pdf = await Pdf.findById(req.params.id);
 
+    if (!pdf) {
+      return res.status(404).json({
+        success: false,
+        message: "PDF not found",
+      });
+    }
 
-// SEARCH PRODUCT API
+    await cloudinary.uploader.destroy(
+      pdf.publicId,
+      {
+        resource_type: "raw",
+      }
+    );
 
-export const searchProduct = async(req,res)=>{
+    await Pdf.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "PDF deleted successfully",
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
+export const uploadPdf = async(req,res)=>{
 
     try{
 
-
-        const keyword =
-        req.query.search;
-
-
-
-        if(!keyword){
+        if(!req.file){
 
             return res.status(400).json({
-
                 success:false,
-
-                message:"Search keyword required"
-
+                message:"PDF Required"
             });
 
         }
 
+        const pdf = await Pdf.create({
 
+            title:req.body.title,
 
+            pdfUrl:req.file.path,
 
-        const products =
-        await productModel.find({
-
-            productName:{
-
-                $regex:keyword,
-
-                $options:"i"
-
-            }
-
+            publicId:req.file.filename
 
         });
 
-
-
-
-        res.status(200).json({
+        res.status(201).json({
 
             success:true,
-
-            count:products.length,
-
-            products
+            message:"PDF Uploaded",
+            pdf
 
         });
 
-
-
-    }
-    catch(error){
-
+    }catch(error){
 
         res.status(500).json({
 
             success:false,
-
             message:error.message
 
         });
 
-
     }
 
-
-};
-
-export const deleteProduct = async (req, res) => {
-  try {
-    const product = await productModel.findById(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-
-    // Cloudinary image delete
-    if (product.image?.public_id) {
-      await cloudinary.uploader.destroy(product.image.public_id);
-    }
-
-    await productModel.findByIdAndDelete(req.params.id);
-
-    res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-
-export const getAllProducts = async (req, res) => {
-  try {
-    const products = await productModel.find().sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: products.length,
-      products,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 
 
-export const createProduct = async (req, res) => {
-  try {
-    const { productName, category, price, description } = req.body;
-    console.log(req.file);
-console.log(req.body);
+export const getAllPdf = async(req,res)=>{
 
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "Image is required",
-      });
+    const pdfs=await Pdf.find().sort({createdAt:-1});
+
+    res.json({
+
+        success:true,
+        pdfs
+
+    });
+
+};
+
+
+
+export const downloadPdf=async(req,res)=>{
+
+    const pdf=await Pdf.findById(req.params.id);
+
+    if(!pdf){
+
+        return res.status(404).json({
+            success:false,
+            message:"PDF Not Found"
+        });
+
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "Products",
-    });
+    res.redirect(pdf.pdfUrl);
 
-    const product = await productModel.create({
-      productName,
-      category,
-      price,
-      description,
-      image: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Product created successfully",
-      product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
