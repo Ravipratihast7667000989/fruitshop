@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import bannerRoutes from "./src/routes/bannerRoutes.js";
-import productRoutes from "./src/routes/pdfRoutes.js"
+import productRoutes from "./src/routes/productRoutes.js"
 import bestsellingRoutes from "./src/routes/bestsellingRoutes.js"
 import cartRoutes from "./src/routes/cartRoutes.js";
 import userBlockRoutes from "./src/routes/blockRoutes.js";
@@ -12,7 +12,6 @@ import categoryRoutes from "./src/routes/categoryRoutes.js"
 import orderTrackingRoutes from "./src/routes/orderTrackingRoutes.js"
 import appleRoutes from "./src/routes/appleRoutes.js";
 import orderSucessed from "./src/routes/orderSucessedRoutes.js"
-import pdfRoutes from "./src/routes/pdfRoutes.js";
 import cors from "cors";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
@@ -35,7 +34,6 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/order", orderTrackingRoutes);
 app.use("/api/apple",appleRoutes);
 app.use("/api",orderSucessed);
-app.use("/api/pdf",pdfRoutes);
 
 app.listen(PORT, () =>
   console.log(`Server is running on port ${PORT}`)
