@@ -8,6 +8,6 @@ router.get("/all/order",getAllOrders);
 
 router.get("/search/:orderId", getOrderByOrderId);/// Duplicate 
 router.get("/order/:orderId",getOrderByOrderId); 
-router.put("/order/:orderId/status",updateOrderStatus);
+router.put("/order/status/:orderId",updateOrderStatus);
 
 export default router;
