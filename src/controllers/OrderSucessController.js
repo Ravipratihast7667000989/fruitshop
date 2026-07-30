@@ -180,3 +180,60 @@ export const getAllOrders = async (req, res) => {
 
   }
 };
+
+
+// fetch order by orderid
+export const getOrderBOrderId = async(req , res) =>{
+  try {
+    const {orderId} = req.params;
+    const order = await OrderSucess.findOne({orderId});
+    if(!order){
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+    res.status(200).json({
+      success:true,
+      order,
+
+    })
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:error.message,
+    });
+    
+  }
+};
+
+// update order status
+
+export const updateOrderStatus = async (req,res)=>{
+  try {
+    const {orderId} = req.params;
+    const {orderStatus} = req.body;
+
+    const order = await OrderSucess.findOneAndUpdate(
+      {orderId},{orderStatus},{new:true}
+    );
+    if(!order){
+      return
+      res.status(404).json({
+        success:false,
+        message:"Order not found",
+      });
+    }
+    res.status(200).json({
+      success:true,
+      message:"Order status updated",
+      order
+    })
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:error.message,
+    });
+    
+  }
+};
