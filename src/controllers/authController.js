@@ -238,21 +238,48 @@ export const profile = async (req, res) => {
 
 /* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
 
-  const otp = generateOTP();
-  user.otp = otp;
-  user.otpExpiry = Date.now() + 5 * 60 * 1000;
-  await user.save();
-  await sendEmail(email, otp);
+    const user = await User.findOne({ email });
 
-  console.log("OTP:", otp); // send via email/
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
+    const otp = generateOTP();
 
-  res.json({ message: "OTP sent successfully" });
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 5 * 60 * 1000;
+    user.otpSentAt = Date.now();
+
+    await user.save();
+
+    await sendEmail(email, otp);
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP sent successfully",
+    });
+
+  } catch (error) {
+    console.error("Send OTP Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 /* ================= VERIFY OTP ================= */
