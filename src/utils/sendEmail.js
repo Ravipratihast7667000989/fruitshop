@@ -4,27 +4,19 @@ const sendEmail = async (email, otp) => {
 
   const transporter = nodemailer.createTransport({
 
-    host: "smtp.gmail.com",
+   service:"gmail",
 
-    port: 465,
-
-    secure: true,
-
-    auth: {
+  auth: {
       user: process.env.USER_EMAIL,
       pass: process.env.USER_PASS,
     },
-
-    tls: {
-      rejectUnauthorized: false
-    }
 
   });
 
 
   await transporter.sendMail({
 
-    from: `"Fruit App 🍎" <${process.env.USER_EMAIL}>`,
+    from:process.env.EMAIL_USER,
 
     to: email,
 
