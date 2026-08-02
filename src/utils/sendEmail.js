@@ -4,9 +4,12 @@ const sendEmail = async (email, otp) => {
 
   const transporter = nodemailer.createTransport({
 
-   service:"gmail",
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // 587 ke liye false
 
-  auth: {
+    auth: {
       user: process.env.USER_EMAIL,
       pass: process.env.USER_PASS,
     },
@@ -16,7 +19,7 @@ const sendEmail = async (email, otp) => {
 
   await transporter.sendMail({
 
-    from:process.env.EMAIL_USER,
+    from: process.env.EMAIL_USER,
 
     to: email,
 
