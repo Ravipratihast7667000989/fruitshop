@@ -14,6 +14,29 @@ const trackingSchema = new mongoose.Schema({
       "Cancelled"
     ]
   },
+      products:[
+
+        {
+
+            product:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"Product"
+            },
+
+
+            quantity:{
+                type:Number,
+                required:true
+            }
+
+
+        }
+
+    ],
+    status:{
+        type:String,
+        default:"Pending"
+    },
   message: String,
   date: {
     type: Date,

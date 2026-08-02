@@ -180,7 +180,13 @@ export const login = async (req, res) => {
         message: "User not found",
       });
     }
-
+  // Check if user is blocked
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been blocked by the admin.",
+      });
+    }
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
 

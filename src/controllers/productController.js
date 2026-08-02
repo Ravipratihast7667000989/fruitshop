@@ -6,74 +6,74 @@ import cloudinary from "../utils/cloudinary.js";
 
 // SEARCH PRODUCT API
 
-export const searchProduct = async(req,res)=>{
+export const searchProduct = async (req, res) => {
 
-    try{
-
-
-        const keyword =
-        req.query.search;
+  try {
 
 
+    const keyword =
+      req.query.search;
 
-        if(!keyword){
 
-            return res.status(400).json({
 
-                success:false,
+    if (!keyword) {
 
-                message:"Search keyword required"
+      return res.status(400).json({
 
-            });
+        success: false,
+
+        message: "Search keyword required"
+
+      });
+
+    }
+
+
+
+
+    const products =
+      await productModel.find({
+
+        productName: {
+
+          $regex: keyword,
+
+          $options: "i"
 
         }
 
 
-
-
-        const products =
-        await productModel.find({
-
-            productName:{
-
-                $regex:keyword,
-
-                $options:"i"
-
-            }
-
-
-        });
+      });
 
 
 
 
-        res.status(200).json({
+    res.status(200).json({
 
-            success:true,
+      success: true,
 
-            count:products.length,
+      count: products.length,
 
-            products
+      products
 
-        });
-
-
-
-    }
-    catch(error){
+    });
 
 
-        res.status(500).json({
 
-            success:false,
-
-            message:error.message
-
-        });
+  }
+  catch (error) {
 
 
-    }
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+
+  }
 
 
 };
@@ -130,9 +130,8 @@ export const getAllProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { productName, category, price, description } = req.body;
-    console.log(req.file);
-console.log(req.body);
+    const { productName, category, price, description,stock } = req.body;
+  
 
     if (!req.file) {
       return res.status(400).json({
@@ -150,6 +149,7 @@ console.log(req.body);
       category,
       price,
       description,
+      stock,
       image: {
         public_id: result.public_id,
         url: result.secure_url,
@@ -166,5 +166,37 @@ console.log(req.body);
       success: false,
       message: error.message,
     });
+  }
+};
+
+
+export const getProductCounts = async(req,res)=>{
+  try {
+    const totalProducts = await productModel.countDocuments();
+
+    const soldProducts = await productModel.countDocuments({
+      status:"sold",
+    });
+
+    const avilableProducts = await productModel.countDocuments({
+      status:"available",
+    });
+    res.status(200).json({
+      success:true,
+      message:"Product counts fetch sucessfully",
+      data:{
+        totalProducts,
+        soldProducts,
+        avilableProducts,
+      },
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message:"failed to fetch product counts",
+      error:error.message,
+    });
+    
   }
 };

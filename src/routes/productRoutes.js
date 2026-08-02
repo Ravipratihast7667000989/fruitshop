@@ -1,6 +1,6 @@
 import express from "express";
 import productupload from "../middleware/multer.js";
-import { createProduct ,deleteProduct,getAllProducts, searchProduct} from "../controllers/productController.js";
+import { createProduct ,deleteProduct,getAllProducts, getProductCounts, searchProduct} from "../controllers/productController.js";
 import { deleteCart } from "../controllers/addToCartController.js";
 
 const router = express.Router();
@@ -10,6 +10,8 @@ router.get("/all", getAllProducts);
 router.get("/search",searchProduct);
 router.delete("/delete/:id", deleteProduct);
 router.delete("/delete/:productId",deleteCart);
+
+router.get("/product-counts",getProductCounts);
 
 
 export default router;
